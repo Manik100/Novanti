@@ -1,0 +1,854 @@
+*{
+	font-family: 'Montserrat', sans-serif;
+}
+.font{
+ font-family: 'Montserrat', sans-serif; 	
+}
+
+.title{
+	/* display:block; */
+	padding:10px;
+	margin:  10px auto;
+}
+
+.filter-input {
+	padding: 8px;
+	margin-top: 2px;
+}
+
+
+.checkbox-container {
+	width: 100%;
+	font-family: 'Montserrat', sans-serif;
+	/* padding: 0px; */
+}
+
+.btn-group.btn-group-sm.appButGrp>button {
+    padding: 0.49em;
+}
+.btn-primary{
+    background: #534f4f;
+    box-shadow: inset #252627 0 0 6px 0;
+    border-color: #534f4f;
+    transition:all 0.4s;
+}
+.btn-primary:hover {
+	border: 1px solid transparent;
+	box-shadow: inset #90c4f7 0 0 6px 0;
+	color: #fff;
+	background-color: #17344d;
+	border-top-color: #57cbff;
+}
+.btn-primary:focus {
+    background: #17344d;
+    box-shadow: inset #252627 0 0 6px 0;
+    color: white;
+    transition: all 0.4s;
+    outline-color: #4c86b8;
+}
+.btn-main{
+	background: #6b9ecd;
+	box-shadow: inset #252627 0 0 0 0;
+	border-radius: 2px;
+	color: #ffffff;
+	transition:all 0.4s;
+	position:  absolute;
+	top: 50%;
+	left:  50%;
+	transform:  translate(-50%,-50%);
+	width:  100%;
+	height:  100%;
+	transition: all 0.4s;
+}
+.btn-main:before,
+.btn-main:after{
+    content:'';
+    position:absolute;
+    width: 100%;
+    height:100%;
+    top:50%;
+    left:50%;
+    margin: 0;
+    padding: 0;
+    color:#000;
+    transform:translate(-50%,-50%);
+}
+.btn-main:before
+{
+	width:40%;
+	border-bottom: 2px solid #1f609e;
+	transition: all .3s cubic-bezier(0, 0, 0.21, 0.99);
+}
+.btn-main:active:before
+{
+	border-bottom: 2px solid #ffffff;
+	transition: all .3s cubic-bezier(0, 0, 0.21, 0.99);
+}
+.btn-main:hover:before{
+	width:100%;
+	border-bottom: 2px solid #ffffff;
+}
+.btn-main:after{
+	width:0%;
+	border-bottom: 2px solid #ffffff;
+	transition: all 0.3s cubic-bezier(0, 0, 0.21, 0.99) 100ms;
+}
+
+.btn-main:hover:after{
+	width:100%;
+	border-bottom: 3px solid #060606;
+}
+.btn-main:active:after{
+	width:70%;
+	border-bottom: 3px solid #ffffff;
+}
+.btn-main:focus{
+	color:white;
+}
+.btn,input{
+	border-radius:0 !important;
+}
+.btnHolder{
+	display: block;
+    position: relative;
+    height: 2.5em;
+}
+.btn-main:hover{
+    background: #1f609e;
+    border-radius: 2px;
+    color: #ffffff;
+}
+.btn-main:active{
+    background: #4295e4;
+    border-radius: 2px;
+    color: #ffffff;
+}
+
+
+checkbox-container:focus{
+	outline:  none;
+}
+
+
+.msg{
+	position: absolute;
+	top: 95%;
+	font-size: 0.75em;
+	left: 16px;
+	color: #d70000;
+}
+input.filled.wrong,
+input.wrong,
+input.wrong:focus{
+	border-color:#b30000;
+	color:#b30000;
+}
+input.wrong,
+input.filled.wrong ~ label,
+input.wrong,
+input.wrong ~ label,
+input.wrong:focus ~ label{
+	color:#d30000;
+}
+
+input.filled.correct,
+input.correct,
+input.correct:focus{
+	border-color:#005e00;
+	color:#005e00;
+}
+input.correct,
+input.filled.correct ~ label,
+input.correct,
+input.correct ~ label,
+input.correct:focus ~ label{
+	color:#005e00;
+}
+
+/* The container */
+.checkbox-container {
+    display: block;
+    color: #2b2b2b;
+    pointer-events:  visible;
+    position: relative;
+    margin-top: 11px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 0.9em;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Hide the browser's default checkbox */
+.checkbox-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+    position: absolute;
+    top: 1px;
+    left: 0;
+    border: 1px solid #a0a0a0;
+    height: 17px;
+    border-radius:2px;
+    width: 17px;
+    transition: background 0.3s;
+    background-color: #eee;
+}
+/* Style the checkmark/indicator */
+.checkbox-container .checkmark:after {
+  left: 6px;
+  top: 2px;
+  width: 6px;
+  height: 11px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  transform: rotate(40deg);
+}
+/* On mouse-over, add a grey background color */
+.checkbox-container:hover input ~ .checkmark {
+    background-color: #ccc;
+}
+
+/* When the checkbox is checked, add a blue background */
+.checkbox-container input:checked ~ .checkmark {
+    background-color: #534f4f;
+    color:#fff;
+    border:  0px solid;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+.checkbox-container input:checked ~ .checkmark:after {
+  display: block;
+}
+.btn-round{
+	border-radius: 4px!important;
+}
+.btn-default,
+.btn-default:focus{
+	padding: 8px;
+	font-weight:  500;
+	box-sizing:  border-box;
+	margin: 0 auto 14px;
+	text-shadow: 0px 0 3px black;
+	background: #343A40;
+	border-color:transparent;
+	/* box-shadow: 0px 3px 12px 0 rgba(87, 86, 86, 0.81); */
+}
+.btn-default~span,
+.btn-default:focus~ span{
+	text-shadow: 0px 5px 7px black;
+}
+.btn-default:hover{
+	padding: 8px;
+	background: #49525c;
+	text-shadow: 0px 3px 3px black;
+	border-color:transparent;
+	box-shadow: 0px 7px 20px 0 rgba(87, 86, 86, 0.54);
+}
+.btn-default:hover~span{
+	text-shadow: 0px 8px 9px black;
+}
+.btn-default:active{
+	background: #000000 !important;
+	padding: 8px;
+	border-color:transparent!important;
+	box-shadow: 0px 0px 20px 0 rgba(0, 0, 0, 0.54) !important;
+}
+.signInIco{
+	    position: absolute;
+	    top: 50%;
+	    color: white;
+	    right: 6%;
+	    transform: translate(-50%,-50%);
+}
+.chkDiv{
+	display: block;
+	margin: 8px 0;
+	/* width: 100%; */
+	padding: 5px 0px 0px;
+}
+.chkDiv .checkbox-container{
+	padding-left: 29px;
+}
+
+
+.content{
+	/* padding-top: 65px; */
+}
+
+
+
+
+/*TODO need to give specific name, p used wrongly and globally*/
+p{
+    margin: 0 0 5px;
+}
+
+.lists{
+    border: 1px solid rgba(178, 178, 178, 0.63);
+    padding: 10px 8px;
+    line-height: 0.9;
+	margin-top: 15px;
+	background: #fff;
+    position:  relative;
+    box-shadow: 1px 1px 10px 0 rgba(128, 128, 128, 0.37);
+    font-size: 0.8em;
+    margin-bottom: 25px;
+}
+.lists div{
+	font-weight:bold;
+	line-height: 1.2;
+}
+.lists p{
+	font-weight:normal;
+	line-height: 1.2;
+	padding-right: 5px;
+	padding-top: 9px;
+	text-align:  justify;
+}
+.gen::after{
+	content:'';
+	position:absolute;
+	top: 0;
+	left: 10px;
+	right: 10px;
+	bottom:0;
+}
+.gen:hover::after{
+	z-index:-999;
+	content:'';
+	position:absolute;
+	top: 0;
+	left: 10px;
+	right: 10px;
+	bottom:0;
+}
+.gen .hidden{
+	height: 0;
+	overflow:  hidden;
+	display:  block;
+	transition:3s;
+}
+.hidden{
+	height:auto;
+}
+.lists span{
+	font-weight: normal;
+	line-height: 1.2;
+	padding: 5px 0;
+}
+.lists> div:first-child > div:last-child > span{
+	padding-right: 4px;
+}
+.lists > .row:first-child > div{
+
+/* padding:0; */
+	
+display: grid;
+	
+padding-bottom: 10px;
+	
+padding-left: 20px;
+}
+.subHead{
+
+	padding-top:10px;
+	padding-left:  5px;
+	padding-bottom:5px;
+}
+.subHead .listTitle{
+	font-weight:bold;
+}
+.listTitle{
+	display:flex
+}
+
+.topic{
+	font-size: 1.5em;
+	padding: 33px 15px 15px 13px;
+	position:  relative;
+	margin-top: -10px;
+	color: white;
+	background: #49525c;
+	box-shadow: 0 1px 15px 0 rgba(0, 0, 0, 0.65);
+}
+
+@media (max-width:768px)
+{
+
+	.lists{
+		    border: 2px solid #b2b2b2;
+		    padding: 10px 5px;
+		    line-height: 0.9;
+		    margin: 25px 0;
+	}
+	.right{
+		padding:0;
+	}
+}
+@media (max-width: 819px){
+	.topic{
+		font-size: 13pt;
+		padding: 10px 5px;
+		margin-top: -32px;
+		margin-bottom: -11px;
+	}
+}
+@media (min-width: 768px){
+	.centerSection{
+		min-width: 413px;
+	}
+}
+
+.dropdown-sortby>li{
+	padding:5px;
+}
+
+.dropdown-sortby{
+	cursor:default;
+	width: 100%;
+	height: auto;
+	padding: 0;
+	max-height: 162px;
+	overflow-y: auto;
+	min-width: 10px;
+	border-radius: 0;
+	/* border: 1px solid grey; */
+	margin-top: -3px;
+	background-color:#ccc;
+}
+.dropdown-sortby>li:hover{
+	/* background-color:#555; */
+	color:#ccc;
+}
+.dropdown-sortby a{
+	padding: 0 5px;
+	text-align: center;
+}
+
+checkbox-container {
+  padding-left: 32px;
+    cursor: pointer;
+  display: inline-block;
+  font-family: sans-serif;
+  position: relative;
+  font-weight:normal;
+}
+
+#sc::-webkit-scrollbar {
+    width: 20px;
+}
+#sc::-webkit-scrollbar-button {
+    background: #333;
+    height: 25px;
+    width: 25px;
+}
+#sc::-webkit-scrollbar-track {
+    background: #e4e4e4;
+}
+#sc::-webkit-scrollbar-thumb {
+    background: #555;
+}
+#sc::-webkit-scrollbar-thumb:hover {
+    background: #000;
+}
+#sc::-webkit-scrollbar-thumb:active {
+    background: #666;
+    -webkit-box-shadow: inset 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+
+.leftSide{
+	padding: 26px 50px;
+	min-width: 265px;
+}
+.filter-row{
+	margin-bottom: 20px;
+	position:  relative;
+}
+.filterDivision{
+	width: 100%;
+    border-width: 2px;
+    border-color: #888;
+}
+.clear{
+	float:right;
+}
+.clear span{
+	font-size:0.85em;
+}
+.clear span a{
+	color:#555;
+}
+.sort{
+	position:  absolute;
+	top: 42px;
+	right: 12px;
+}
+.sort button{
+	background: white !important;
+	color: black !important;
+	font-size: 14px;
+	padding: 1px 5px;
+}
+.sort button:hover{
+	background: #aaa !important;
+	color: white !important;
+}
+.listFooter{
+	padding-top:10px;
+	padding-bottom:10px;
+	padding-left: 5px;
+}
+.listFooter-right{
+	float:right;
+	padding-right: 18px;
+	text-align:  right;
+	padding-left: 0;
+}
+.listFooter-right > div{
+	float:right;
+}
+.Exp{
+	    position: absolute;
+	    bottom: -12px;
+	    left: 50%;
+	    transform: translateX(-50%);
+	    pointer-events:none;
+	    opacity:0;
+	    transition:0.2s;
+}
+.less .fullExp{
+	pointer-events:auto;
+	opacity:1;
+}
+.full .lessExp{
+	pointer-events:auto;
+	opacity:1;
+}
+.Exp-btn{
+	padding: 5px 15px;
+	box-shadow: 0 0 8px 0 grey;
+	background: #e0e0e0;
+	color: black;
+	text-align:  center;
+	white-space:  nowrap;
+	border-radius:30px;
+	font-weight: normal !important;
+	cursor:  pointer;
+}
+.Exp-btn:hover{
+	padding:5px 10px;
+	color: white;
+	box-shadow: 0 3px 11px 0 rgba(21, 21, 21, 0.74);
+	background: #5c5c5c;
+	border-radius:30px;
+}
+.btn-useful{
+	width: 112px;
+	padding: 5px !important;
+	margin: 0;
+	font-size: 1.1em;
+	font-weight: normal !important;
+	padding-left: 32px !important;
+}
+.usefulNo{
+right:  unset;
+left: 30px;
+background: #888;
+font-size: 1em;
+height:  100%;
+display:  block;
+width: 30px;
+padding: 5px;
+margin-right: 17px;
+}
+.subHead{
+	cursor:default;
+	border-top:1px solid rgba(0, 0, 0, 0.05);
+	border-bottom:1px solid rgba(0, 0, 0, 0.05);
+}
+.subHead:hover{
+	border-top:1px solid rgba(0, 0, 0, 0.05);
+	border-bottom:1px solid rgba(0, 0, 0, 0.05);
+	background: linear-gradient(0deg,#f2f2f2 ,rgba(0, 0, 0, 0) 50%,rgba(255, 255, 255, 0));
+	transition: 0.2s;
+}
+
+.chkDiv label{
+	margin: 7px auto;
+}
+.vote{
+	padding: 6px;
+	color:white;
+	background:#4b96cc;
+	border-radius:50%;
+	/* font-size: 1.1em; */
+	cursor:  pointer;
+	box-shadow: 0 0 0px 0px rgba(0, 0, 0, 0.44);
+	opacity: 0;
+	transition: 0.2s;
+}
+
+.vote ~ span{
+	position:absolute;
+	top: -1px;
+	left: 14%;
+	background:grey;
+	color:white;
+	border-radius:30px;
+	padding: 3px 7px;
+	font-size: 0.85em;
+	opacity:0;
+	transition: 0.1s;
+	transform: scale(0.2) translateX(-50%);
+}
+.vote:hover ~ span{
+	top: -23px;
+	background:#4b96cc;
+	box-shadow:0 0 10px 0 #4b96cc;
+	opacity:1;
+	transform: scale(1) translateX(-15%);
+}
+.report,.report ~ span{
+	background:#d60000 !important;
+}
+.report ~ span{
+	background:#d60000 !important;
+	box-shadow:0 0 10px 0 #d60000 !important;
+}
+.subHead:hover .vote{
+	opacity:1;
+}
+.vote:hover{
+	box-shadow: 0 7px 12px 0px rgba(0, 0, 0, 0.44);
+	transform:scale(1.1);
+}
+.hoverBtn{
+	padding-left:10px;
+	position:relative;
+	transition:  0.3s;
+}
+.voters{
+	position: absolute;
+	display: flex;
+	right: 8%;
+	top: 7px;
+	float: right;
+}
+@media (max-width: 768px)
+{
+.listFooter-right {
+	text-align: left;
+	padding: 10px 15px 5px;
+}
+.leftSide {
+    padding: 26px 30px;
+}
+.lists> div:first-child > div:last-child > span {
+    text-align: left;
+    }}
+    @media (max-width: 819px)
+{
+	.sort {
+    top: 24%;
+    /* position: absolute; */
+    right: 10px;
+}
+.sort button {
+    background: white !important;
+    color: black !important;
+    font-size: 12px;
+    padding: 1px 5px;
+}
+}
+@media (max-width: 400px){
+	.sort {
+    position: absolute;
+    right: 10px;
+	}
+}
+@media (max-width: 323px){
+	.sort {
+    top: 60%;
+    position: absolute;
+    right: 10px;
+}
+.topic {
+    font-size: 1.5rem;
+}
+}
+@media (max-width: 372px)
+{
+	.navbar-brand{
+		font-size: 0.95em !important;
+		margin: 0;
+}
+}
+/*TODO need to check if removing the below dropdown is correct or not*/
+.dropdown-multi-select dd ul {
+    background-color: #fff;
+    border: 1px solid rgba(44, 44, 44, 0.13);
+    color: #fff;
+    display: none;
+    color: black;
+    padding: 0;
+    position: absolute;
+    width: 100%;
+    margin: 0;
+    list-style: none;
+    z-index: 99;
+    overflow: auto;
+}
+
+.dropdown-multi-select a, .dropdown-multi-select a:visited {
+	color: #000;
+	outline: none;
+	font-weight: normal;
+}
+
+.dropdown-multi-select a, .dropdown-multi-select a:visited {
+	color: #000;
+	outline: none;
+	font-weight: normal;
+}
+.dropdown-multi-select dt a {
+	background-color: #fff;
+	display: block;
+	padding: 8px 20px 5px 10px;
+	min-height: 25px;
+	line-height: 24px;
+	overflow: hidden;
+	border: 0;
+	width: 100%;
+	height: 36px;
+}
+.mutliSelect label,.mutliSelect span{
+	width:100%;
+	padding: 0;
+	display:block;
+	margin: 0;
+}
+.mutliSelect span{
+	padding: 5px 10px;
+	border-bottom: 1px solid rgba(165, 165, 165, 0.52);
+}
+.mutliSelect span:hover{
+background:#578f9a;
+color:white;
+}
+.mutliSelect input:checked ~ span{
+	background: #919191;
+	color: #dadada;
+}
+.mutliSelect input:checked ~ span:hover{
+	background:#7d7d7d;
+	color:#d8d8d8;
+}
+
+
+
+
+@media (max-width: 576px)
+{
+	.listFooter-right > div 
+	{
+    	float: left;
+	}
+}
+.show{display: block !important} .hide{display: none !important}
+
+
+
+.navbar-brand {
+  padding: 0px;
+}
+.navbar-brand>img {
+  height: 100%;
+  margin-right: 10px;
+  margin-left: 7px;
+}
+
+a{
+	text-decoration: none !important;
+}
+
+
+.mutliSelect label,.mutliSelect span{
+	width:100%;
+	padding: 0;
+	display:block;
+	margin: 0;
+}
+.mutliSelect span{
+	padding: 5px 10px;
+	border-bottom: 1px solid rgba(165, 165, 165, 0.52);
+}
+.mutliSelect span:hover{
+background:#578f9a;
+color:white;
+}
+
+.hida{text-decoration:  none;}
+dl{
+	margin:0;
+	width: 100%;
+	padding: 0;
+	height: 30px;
+}
+dt a{
+	width:100%;
+}
+@media (max-width: 576px)
+{
+	.listFooter-right > div 
+	{
+    	float: left;
+	}
+}
+.hidden {
+	display: none;
+}
+
+.well {
+    min-height: 20px;
+    padding: 19px;
+    margin-bottom: 20px;
+    background-color: #f5f5f5;
+    border: 1px solid #e3e3e3;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+}
+
+
+/*to retain new line in the display*/
+.angular-with-newlines {
+	white-space: pre-line;
+}
+
+.btn-color-white{
+	color: #fff !important;
+}
+
+.multiSel button i{
+	color:#49525C;
+}
+
+.dropdown dt{
+    border: 1px solid #dcdcdc;
+    background: #fff;
+}

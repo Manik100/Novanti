@@ -1,0 +1,50 @@
+angular.module('epo').directive('myselectItem', function ($http, $filter) {
+    return {
+        scope: {
+            myselectItem: '@',
+            ngModel: '='
+        },
+        restrict: 'A',
+        require: 'ngModel',
+        link: function (scope, element, attrs) {
+            element.autocomplete({
+                source: function (request, response) {
+                    $http({
+                            method: 'GET',
+                            url: "https://autocomplete.clearbit.com/v1/companies/suggest?query=" + request.term,
+                            header: {
+                                "Content-Type": "application/json"
+                            }
+                        }).then(function (result) {
+                            if (result) {
+                                var array = [];
+                                result.data.forEach(item => {
+                                    array.push(item.name);
+                                });
+                                response(array);
+                            }
+                        }),
+                        function (error) {
+                            var path = 'views/apps/guide/experience_submit/job/json/';
+
+                            $http.get(root_path + 'companies.json').
+                            then(function (result) {
+                                var companies = $filter('filter')(result, val);
+
+                                if (companies) {
+                                    var array = [];
+                                    companies.data.forEach(item => {
+                                        array.push(item.name);
+                                    });
+                                    response(array);
+                                }
+                            }).
+                            catch(function onError(response) {
+                                defer.resolve(false);
+                            });
+                        };
+                }
+            });
+        }
+    }
+});

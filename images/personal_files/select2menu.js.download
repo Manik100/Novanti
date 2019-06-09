@@ -1,0 +1,88 @@
+'use strict';
+
+
+
+var app = angular.module('epo');
+
+app.directive("selectmenu", function() {
+
+    return {
+
+        restrict: 'E',
+
+        scope: {
+
+            model: '=',
+
+            array: '=',
+
+            keyname: '=',
+
+            value: '='
+
+        },
+
+        link: function($scope,$rootScope, element, attrs) {
+
+            $scope.search="";
+
+            $scope.list = $scope.model;
+
+            
+
+            $scope.toggleSelection = function(selectedValue){
+
+                var index = $scope.list.indexOf(selectedValue.replace(/-/g, ' '));
+
+                if(index === -1){
+
+                    $scope.list.push(selectedValue);
+                    $(".dropdown dd ul").hide();
+                    // $scope.model = $scope.list;
+                    // $scope.purpose_blur();
+                    // console.log($scope.list)
+
+                }
+
+                else if(index>-1){
+
+                    $scope.list.splice(index,1);
+
+                }
+
+            };
+
+            $scope.clear = function(){
+
+                $scope.model = [];
+
+                $scope.list = $scope.model;
+
+            }
+
+        },
+
+        templateUrl: function (tElement, tAttrs) {
+
+            if (tAttrs) {
+
+                if (tAttrs.type === 'single-select') {
+
+                    return 'directives/select2.html';
+
+                }
+
+                if (tAttrs.type === 'multi-select') {
+
+                    return 'directives/multiselect2.html';
+
+                }
+
+            }
+
+        }
+
+    }
+
+});
+

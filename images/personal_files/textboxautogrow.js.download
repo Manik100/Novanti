@@ -1,0 +1,18 @@
+angular.module('epo').directive('autogrow', function ($timeout) {
+    return {
+        restrict: 'A',
+        link: function (scope, element, attributes, controller) {
+
+            element.css({ 'height': 'auto', 'overflow-y': 'hidden' });
+            $timeout(function () {
+                element.css('height', '30 px');
+            }, 100);
+
+            element.on('input', function () {
+                element.css({ 'height': 'auto', 'overflow-y': 'hidden' });
+                element.css('height', element[0].scrollHeight + 'px');
+
+            });
+        }
+    };
+});

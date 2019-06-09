@@ -1,0 +1,50 @@
+var app = angular.module('epo');
+
+app.controller('loginCtrl',function($scope, $rootScope, socialLoginService, $localStorage, $http) {
+    // $scope.loginText = "Sourav Saha"; //display only the first name, so that the sign in option is visible at the top even in mobile, but it would be clumsy and I cannot show epon.in
+    
+    var loggedInlocal = $localStorage.user_auth || {};
+    $scope.loggedIn = Object.keys(loggedInlocal).length;
+    $localStorage.loggedIn = $scope.loggedIn;
+    
+    if ($scope.loggedIn) {
+        $scope.profileImageUrl = $localStorage.user_auth["profile_img_url"];
+    } else {
+        $scope.profileImageUrl = "../default-avatar.png";
+    }
+    
+    $scope.signout = function(){
+        console.log("logout attempt");
+        socialLoginService.logout();
+        $rootScope.user_logged_out();
+        
+    }
+
+    $scope.$on('event:social-sign-in-success', function(event, userDetails) {
+        $scope.loggedIn = 1;
+        $localStorage.loggedIn = 1;
+        // $rootScope.$emit("succesful_login", {});
+
+        // console.log(userDetails);
+        $scope.user_auth = {};
+        $scope.user_auth["mail"] = userDetails.email;
+        $scope.user_auth["name"] = userDetails.name;
+        $scope.user_auth["guid"] = userDetails.uid;
+        $scope.user_auth["profile_img_url"] = userDetails.imageUrl;
+        $localStorage.user_auth = $scope.user_auth;
+        $scope.profileImageUrl = $localStorage.user_auth["profile_img_url"];
+        $rootScope.succesful_login();
+        // console.log(Object.keys($localStorage.user_auth).length);
+        // $scope.mail_address = userDetails.email;
+        // console.log($localStorage.user_auth);
+        $scope.$apply();
+    });
+
+    $scope.$on('event:social-sign-out-success', function(event, userDetails) {
+        $scope.loggedIn = 0;
+        $scope.user_auth = {};
+        $localStorage.user_auth = {};
+        $scope.profileImageUrl = "../default-avatar.png";
+    })
+
+});

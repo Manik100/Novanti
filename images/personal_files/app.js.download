@@ -1,0 +1,181 @@
+'use strict';
+
+/**
+ * @ngdoc overview
+ * @name myNewProjectApp
+ * @description
+ * # myNewProjectApp
+ *
+ * Main module of the application.
+ */
+angular
+    .module('epo', [
+        'ngAnimate',
+        'ngCookies',
+        'ngResource',
+        'ngSanitize',
+        'ui.router',
+        'uiRouterStyles',
+        'oc.lazyLoad',
+        'ngStorage',
+        'socialLogin',
+        'infinite-scroll',
+        'siyfion.sfTypeahead'
+        
+    ])
+    .config(function ($stateProvider, $locationProvider, $urlRouterProvider, $urlMatcherFactoryProvider, $ocLazyLoadProvider, socialProvider) {
+        socialProvider.setGoogleKey("160364021396-k66nj16d4r00bmsfi6jhoksvkff9v0mf.apps.googleusercontent.com");
+        $urlMatcherFactoryProvider.strictMode(false);
+        $urlRouterProvider.otherwise('/');
+
+        $ocLazyLoadProvider.config({
+            'debug': false, // For debugging 'true/false'
+            'events': false, // For Event 'true/false'
+            'modules': [
+                {
+                    name: 'home',
+                    files: ["./styles/homepage.css"]
+                },
+                    {
+                    name: 'interview',
+                    files: ["./views/apps/guide/interviewexp/stylesheets/interview_home.css",
+                        './views/apps/guide/interviewexp/scripts/interviewhome.js']
+                },
+                {
+                    name: 'interviewexperience', // State2 module
+                    files: ['./views/apps/guide/interviewexp/stylesheets/interviewexp.css',
+                        './views/apps/guide/interviewexp/scripts/interview.js', './styles/select2.min.css',
+                        './styles/bootstrap-select.min.css']
+                },
+                {
+                    name: 'job_exp_submit',
+                    files: ['./views/apps/guide/experience_submit/job/scripts/job_exp_submit.js',
+                        './views/apps/guide/experience_submit/job/stylesheets/job_exp_submit.css',
+                    ]
+                
+                },
+                {
+                    name: 'notes',
+                    files: ['./views/apps/guide/interviewexp/stylesheets/interviewexp.css',
+                        './views/apps/notes/scripts/notes_add_view.js', './views/apps/notes/stylesheets/notes_add_view.css',
+                        './styles/select2.min.css', './styles/bootstrap-select.min.css',
+                        './scripts/tinymce_lib/tinymce/tinymce.min.js', './scripts/tinymce_lib/angular-ui-tinymce/src/tinymce.min.js',
+                        './styles/typeahead/typeahead_bootstrap.min.css', './styles/typeahead/typeaheadjs.min.css']
+
+                },
+                {
+                    name: 'ask_question',
+                    files: ['./views/apps/guide/ask_your_senior/scripts/ask_your_senior_question_submission.js',
+                        './views/apps/guide/ask_your_senior/stylesheets/ask_senior_question_submission.css',
+                        './views/apps/guide/interviewexp/stylesheets/interviewexp.css']
+                }
+                ]
+        });
+
+        $stateProvider
+            .state('home', {
+                url: '/',
+                data: {pageTitle: 'Exam Preparation Online - Education made simple'},
+                templateUrl: 'views/homepage.html',
+                resolve: {
+                    loadMyCtrl: ['$ocLazyLoad', function ($ocLazyLoad) {
+                        return $ocLazyLoad.load('home');
+                    }]
+                }
+            })
+            .state('notes', {
+                url: '/notes',
+                controller: 'NotesAddView',
+                data: {pageTitle: 'Personal notes - Education made Simple'},
+                templateUrl: 'views/apps/notes/view/notes_add_view.html',
+                resolve: {
+                    loadMyCtrl: ['$ocLazyLoad', function ($ocLazyLoad) {
+                        return $ocLazyLoad.load('notes');
+                    }]
+                }
+            })
+            .state('interviewexperience', {
+                url: '/interview-experiences/:orgParam',
+                controller: 'InterviewCtrl',
+                data: {pageTitle: 'Job interview experiences'},
+                params: {
+                    orgParam: {type: 'string', raw: true}
+                },
+                resolve: {
+                    loadMyCtrl: ['$ocLazyLoad', function ($ocLazyLoad) {
+                        return $ocLazyLoad.load('interviewexperience'); // Resolve promise and load before view
+                    }]
+                },
+                templateUrl: 'views/apps/guide/interviewexp/interview.html'
+            })
+            .state('interview', {
+                url: '/interview-experiences',
+                controller: 'InterviewexperienceCtrl',
+                data: {pageTitle: 'Interview experiences'},
+                templateUrl: 'views/apps/guide/interviewexp/interview-home.html',
+                resolve: {
+                    loadMyCtrl:['$ocLazyLoad', function ($ocLazyLoad) {
+                        return $ocLazyLoad.load('interview');
+                    }]
+                }
+            })
+            .state('ask_question', {
+                url: '/ask-your-senior',
+                controller: 'AskController',
+                data: {pageTitle: 'Ask your senior or Guide your juniors'},
+                templateUrl: 'views/apps/guide/ask_your_senior/view/ask_senior_question_submission.html',
+                resolve: {
+                    loadMyCtrl: ['$ocLazyLoad', function ($ocLazyLoad) {
+                        return $ocLazyLoad.load('ask_question');
+                    }]
+                }
+            })
+            .state('job_exp_submit', {
+                url: '/share-job-experience',
+                controller: 'JobExpSubmitController',
+                data: {pageTitle: 'Share your job interview experience'},
+                templateUrl: 'views/apps/guide/experience_submit/job/view/job_exp_submit.html',
+                resolve: {
+                    loadMyCtrl: ['$ocLazyLoad', function ($ocLazyLoad) {
+                        return $ocLazyLoad.load('job_exp_submit');
+                    }]
+                }
+            })
+            .state('otherwise', {
+                abstract: true,
+                data: {pageTitle: 'Login'},
+                templateUrl: 'views/404.html'
+            })
+            .state('otherwise.404', {
+                url: '*path',
+                data: {pageTitle: 'Login'},
+                templateUrl: 'views/404.html'
+            });
+
+
+        $locationProvider.html5Mode(true);
+    }).config(function ($provide) {
+    $provide.decorator('$state', function ($delegate, $stateParams) {
+        $delegate.forceReload = function () {
+            return $delegate.go($delegate.current, $stateParams, {
+                reload: true,
+                inherit: false,
+                notify: true
+            });
+        };
+        return $delegate;
+    });
+}).filter('spaceless', function () {
+    return function (input) {
+        if (input) {
+            return input.replace(/\s+/g, '-');
+        }
+    }
+})
+    .run(function($rootScope, $transitions) {
+        const baseTitle = '';
+        $rootScope.pageTitle = baseTitle;
+        $transitions.onSuccess({}, function($transition$) {
+            $rootScope.pageTitle = ($transition$.to().data && $transition$.to().data.pageTitle) ? `${$transition$.to().data.pageTitle}` : baseTitle;
+        });
+    });

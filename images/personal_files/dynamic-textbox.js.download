@@ -1,0 +1,26 @@
+angular.module('epo').directive('dynamicTextbox', function () {
+    return {
+        restrict: 'E',
+        scope: {
+            items: '=',
+            placeholder: '@'
+        },
+        templateUrl: 'directives/dynamic-textbox.html',
+        link: function (scope, element, attrs) {
+            scope.deleteclick = function (item) {
+                var index = scope.items.indexOf(item);
+                if (index != -1) {
+                    scope.items.splice(index, 1);
+                }
+            };
+            scope.addQuestions = function (text) {
+                if (text) {
+                    var questionNo = scope.items.length+1;
+                    scope.items.push({ name: 'Q' + questionNo +'. '+ text, show: true });
+                    scope.question = '';
+                }
+            }
+        }
+    };
+
+});

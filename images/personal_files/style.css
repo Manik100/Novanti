@@ -1,0 +1,148 @@
+@import url('./css/navbar-main.css');
+/*@import url('./css/navbar-secondary.css');*/
+@import url('./css/select2directive.css');
+
+/*navbar secondary is not being used for time being*/
+
+body{
+    background: #f7fcfd url(body_gradient.png) repeat-x;
+}
+
+
+@media (min-width: 1200px){
+.container {
+    width: 1170px !important;
+}
+}
+
+
+
+
+/**Navbar Common Properties**/
+.navbar {
+    position: relative;
+    min-height: 50px;
+}
+.navbar-brand img {
+    border-radius: 0px;
+}
+@media (min-width: 768px){
+    .navbar-nav {
+        float: left;
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+    .navbar-nav>li>a {
+        padding-top: 15px;
+        padding-bottom: 15px;
+        font-size: 14px;
+        color: #777;
+    }
+    .navbar-expand-sm .navbar-nav .nav-link, .navbar-expand-lg .navbar-nav .nav-link {
+        padding-right: .5rem;
+        padding-left: .5rem;
+        margin-right: 20px;
+    }
+    .inset {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    box-shadow:
+            inset 0 0 0 2px rgba(255,255,255,0.6),
+            0 1px 1px rgba(0,0,0,0.1);
+    background-color: transparent !important;
+    z-index: 999;
+    }
+}
+
+/*TODO need to change to specific*/
+
+
+
+
+
+
+/** directives **/
+.share .btn-default.active.focus, .btn-default.active:focus, .btn-default.active:hover, .btn-default:active.focus, .btn-default:active:focus, .btn-default:active:hover, .open>.dropdown-toggle.btn-default.focus, .open>.dropdown-toggle.btn-default:focus, .open>.dropdown-toggle.btn-default:hover {
+    color: #333;
+    background-color: #d4d4d4;
+    border-color: #8c8c8c;
+}
+
+/*TODO need to shift this style to directive specific style*/
+
+
+
+a{
+    text-decoration: none !important;
+}
+
+/*TODO need to change the variable name (inset) which has some meaning*/
+
+.inset img {
+    border-radius: inherit;
+    width: inherit;
+    height: inherit;
+    display: block;
+    position: relative;
+    z-index: 998;
+}
+
+@media (min-width: 320px) and (max-width: 767px) {
+   
+    
+    .inset {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    box-shadow:
+            inset 0 0 0 2px rgba(255,255,255,0.6),
+            0 1px 1px rgba(0,0,0,0.1);
+    background-color: transparent !important;
+    z-index: 999;
+}
+}
+
+/*can add the below style to google social button*/
+/*.btn-social,.btn-social:focus{*/
+    /*background:#fff;*/
+    /*border: 1px solid #e0dede;*/
+    /*margin: auto 5px;*/
+    /*!* text-align: left; *!*/
+    /*width: 131px;*/
+    /*height: 40px;*/
+    /*box-shadow: 0 8px 20px 0 rgba(138, 137, 137, 0.58);*/
+    /*transition: 0.3s;*/
+/*}.btn-social:hover{*/
+     /*border: 1px solid #a4a2a2;*/
+     /*box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.45098039215686275);*/
+ /*}*/
+/*.btn-social:active{*/
+    /*border: 1px solid #a4a2a2;*/
+    /*box-shadow: 0 0 9px 0 rgba(58, 58, 58, 0.5803921568627451);*/
+/*}*/
+/*.btn-fb,.btn-fb:focus{*/
+    /*background: #395692;*/
+    /*border-color: #395692;*/
+    /*border-radius: 6px!important;*/
+/*}*/
+/*.btn-fb span::before{*/
+    /*content: 'f';*/
+    /*font-family:  inherit;*/
+    /*color: white;*/
+    /*font-weight: 600;*/
+    /*padding: 10px;*/
+/*}*/
+/*.btn-fb span::after{*/
+    /*content: 'Facebook';*/
+    /*font-family:  inherit;*/
+    /*color: white;*/
+    /*font-size: 10pt;*/
+    /*font-weight: 500;*/
+/*}*/
+/*.btn-fb:hover{*/
+    /*background: #395692;*/
+/*}*/
+/*.btn-social span{*/
+    /*margin: 0 7px;*/
+/*}*/

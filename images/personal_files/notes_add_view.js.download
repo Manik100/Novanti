@@ -1,0 +1,1016 @@
+var job_interview_information_app = angular.module('epo');
+
+job_interview_information_app.controller('NotesAddView', function ($scope, $rootScope, $http, $localStorage, $window) {
+    $scope.question_categories = ["Public Q", "My questions"];
+    $scope.selectedCategory = $localStorage.selectedCategory != null ? $localStorage.selectedCategory : $scope.question_categories[0];
+    //by default the purpose would be self-learning, the user can choose other options
+    $scope.selection = {
+        "purpose" : [{
+            "purpose_name" : "Learnt from interest",
+        },{
+            "purpose_name" : "Course study",
+        },{
+            "purpose_name" : "Interview preparation",
+        },{
+            "purpose_name" : "Office requirement",
+        },{
+            "purpose_name" : "Doubt clearance",
+        },{
+            "purpose_name" : "Need to learn",
+        },{
+            "purpose_name" : "Interesting read",
+        },{
+            "purpose_name" : "TO-DO",
+        },{
+            "purpose_name" : "High priority",
+        }]
+    };
+
+    // required for auto populating the default questions when the subject is blank
+    //variable will be changed next time the user changes the subject,
+    $scope.subject_on_load = 0;
+    $scope.search_request_on = 1;
+    $scope.purposeList = [];
+
+    $scope.answered_question = true;
+    $scope.unanswered_question = true;
+
+    $scope.questions = [];
+    // $scope.all_questions = [];
+
+    $scope.stop_fetching_questions = 0;
+    $scope.answered_question_count = 0;
+    $scope.unanswered_question_count = 0;
+    $scope.total_question_count = 0;
+    $scope.feedback_source = "";
+    $scope.thanks_feed_message = "";
+    // $("#domain").select2({
+    //     placeholder: "Questions category",
+    //     data: $scope.question_categories,
+    //     minimumResultsForSearch: -1
+    // });
+    $scope.offset_question = 0;
+    $scope.ref_qid = 0;
+    $scope.loggedIn = $localStorage.loggedIn != null ? $localStorage.loggedIn : false;
+    $localStorage.recentSelectedSubject = $localStorage.recentSelectedSubject == null ? '' : $localStorage.recentSelectedSubject;
+    $scope.succesful_submission_message=false;
+    //TODO apply filter values to the filters based on the url
+    /**backend should be called on four conditions for question fetch
+     * on load of the page, first the filters need to applied -> filter object should be created -> and then backend call
+     * on load of the page offset value would be zero
+     *
+     * if apply filter button is clicked offset value would be reset to zero
+     *
+     * on click of options from the question categories, it would first call the function display_questions_on_category
+     * and then inside each if condition it would check if the number of questions count for that category is less than 9
+     * if yes the offset value would be increased by 9
+
+     **/
+
+    //by default on page load allow all the questions to be displayed, when URL will come into place then the statements
+    //has to be put inside conditions
+
+
+
+    $scope.purpose_updated = function() {
+        // console.log($scope.purposeList);
+    };
+
+    $scope.purpose_focus = function() {
+        $scope.submit_input = false;
+    };
+
+    $scope.purpose_blur = function() {
+        $scope.submit_input = true;
+
+    };
+
+
+
+
+
+    // $rootScope.$on("succesful_login"), function () {
+    //
+    //     console.log("user logged in inside notes_add");
+    // };
+    $rootScope.succesful_login = function () {
+
+        var user_details = {};
+
+
+
+        //TODO remove the below section of assigning localstorage
+        // $localStorage.user_auth["mail"] = "exampreparationonline@gmail.com";
+        // $localStorage.user_auth["name"] = "Swapan Kumar Saha";
+        // $localStorage.user_auth["guid"] = "102936195137727589333";
+        // $localStorage.user_auth["profile_img_url"] = "https://lh4.googleusercontent.com/-arJ-mC03IeE/AAAAAAAAAAI/AAAAAAAAAAA/ACHi3rc3reaKrPVTLlTwUvJa5w0WMoIk1w/s96-c/photo.jpg"
+        // console.log($localStorage.user_auth);
+        user_details["mail"] = $localStorage.user_auth["mail"];
+        user_details["name"] = $localStorage.user_auth["name"];
+        user_details["guid"] = $localStorage.user_auth["guid"];
+        user_details["profile_img_url"] = $localStorage.user_auth["profile_img_url"];
+
+        $http({
+            method: 'POST',
+            url: './controllers/login/authentication.php',
+            data: user_details
+        }).then(function (response) {
+            $localStorage.user_auth["uid"] = response.data.records[0]["uid"];
+            $localStorage.user_auth["pwd"] = response.data.records[0]["pwd"];
+            $scope.personal_notes_message_not_logged_in = false;
+            $scope.loggedIn = true;
+            // console.log($localStorage.user_auth);
+            // console.log(response.data.records);
+        })
+
+
+
+        //make a request to backend to get the uid and password
+
+
+        // console.log("user logged in inside notes_add");
+    };
+
+    // $rootScope.succesful_login();
+
+
+    $rootScope.user_logged_out = function() {
+        // console.log("user logged out inside notes_add");
+        $scope.feedback_email = '';
+        $scope.personal_notes_message_not_logged_in = true;
+    };
+
+    $scope.app_usefulness = function() {
+        // $scope.feedback_message = '\n' +
+        //     '                    <span style="color: #5cb85c"><b>"Quick access" to notes for revision - Note down <span style="color: #1c7430"><b>Key points / Formulas</b></span> from an answer.<br> "Upload img" of ans. from a reference / primary book. Assign "High priority" to important questions for revision.</b></span>\n' +
+        //     '                    <hr>\n' +
+        //     '                    <span style="color: #DC143C"><b>"Bookmark" questions to study / revise later </b></span> <br>\n' +
+        //     '                    <hr>\n' +
+        //     '                    "Search" Exam questions from multiple topics, while you study.\n' +
+        //     '                    <hr>\n' +
+        //     '\n' +
+        //     '                    <span style="color: #5cb85c"><b>Read "Interesting" article at your leisure. "Post link" for future read.</b></span>\n' +
+        //     '                    <hr>\n' +
+        //     '                    <span style="color: #DC143C"><b>Want to "Understand a concept in depth" - implemented from Stack Overflow. Post link. "Rich content editor" allows code submission as well. Explore at your leisure.</b></span>\n' +
+        //     '                    <hr>\n' +
+        //     '\n' +
+        //     '                    Questions bookmarked will be added to Purpose <span style="color: #1c7430"><b> "Need to learn"</b></span>\n' +
+        //     '\n' +
+        //     '                    <hr>\n' +
+        //     '\n' +
+        //     '                    <span style="color: #5cb85c">Office requirement and course study sometimes varies from our self-interest</span><br>\n' +
+        //     '                    Selecting <span style="color: #1c7430"><b>"Learnt from interest"</b></span> will help to distinguish the notes from\n' +
+        //     '                    <span style="color: #1c7430"><b>"Course study" & "Office requirement" </b></span>\n' +
+        //     '                    <hr>\n' +
+        //     '                    <span style="color: #5cb85c">Met some domain expert from your interest</span> - <span style="color: #DC143C">Not able to recall the exact topic which you wanted to know in more details</span> <br>\n' +
+        //     '                    Selecting filters <span style="color: #1c7430"><b>"Doubt clearance"</b></span> will help you retrieve the topic quickly from a specific Subject.';
+        $scope.feedback_email = $localStorage.user_auth["mail"];
+    };
+
+
+
+    $scope.share_question = function (question_id) {
+        $scope.feedback_message = "<b>Google Doc.</b> Sometimes used for sharing private contents among friends." +
+            " Enjoy <b>more flexibility</b> of the same <b>with filters</b>, to help you keep track of the content. You <b>may also like</b> the <b>code sharing option</b> available."
+        $scope.feedback_email = $localStorage.user_auth["mail"];
+
+    };
+
+    $scope.modify_question = function(question_index) {
+        $scope.ref_qid  = $scope.questions[question_index].qid;
+        $scope.question_search = $scope.questions[question_index].ques;
+        $scope.trigger_search();
+
+        //TODO remove the below for production code
+        // $localStorage.loggedIn = 1;
+        // $localStorage.user_auth = {};
+        // $localStorage.user_auth["mail"] = "exampreparationonline@gmail.com";
+        // $localStorage.user_auth["name"] = "Swapan Kumar Saha";
+        // $localStorage.user_auth["guid"] = "102936195137727589333";
+        // $localStorage.user_auth["profile_img_url"] = "https://lh4.googleusercontent.com/-arJ-mC03IeE/AAAAAAAAAAI/AAAAAAAAAAA/ACHi3rc3reaKrPVTLlTwUvJa5w0WMoIk1w/s96-c/photo.jpg"
+        // $localStorage.user_auth["pwd"] = "5cca5b56756cd";
+        // $localStorage.user_auth["uid"] = "5";
+        // console.log($localStorage.user_auth);
+    };
+
+
+    $scope.share_feedback = function () {
+        var user_feedback = {};
+        if ($scope.user_feedback != '') {
+            user_feedback["feedback"] = $scope.user_feedback;
+
+            if ($scope.feedback_email != '') {
+                user_feedback["mail"] = $scope.feedback_email;
+            }
+
+            $http({
+                method: 'POST',
+                url: './controllers/notes/post_feedback.php',
+                data: user_feedback
+            }).then(function (response) {
+                if (response.data.records != undefined) {
+                    $scope.thanks_feed_message = "Thank you for sharing your feedback. ";
+                    if (!$localStorage.loggedIn) {
+                        $scope.thanks_feed_message = $scope.thanks_feed_message + "Please login to get started using the platform. Please do Stay in touch.";
+                    } else {
+                        $scope.thanks_feed_message = $scope.thanks_feed_message + "Please do Stay in touch and let us know how are we doing.";
+                    }
+
+                    $scope.user_feedback = "";
+                } else {
+                    $scope.thanks_feed_message = "Sorry, your response couldn't be submitted. Please mail us to exampreparationonline@gmail.com.";
+                }
+
+
+            })
+        }
+
+
+    };
+
+    //to be called in all cases when the display needs to be changed, except for scroll
+    $scope.trigger_search = function () {
+        var search_keyword = $scope.question_search || '',
+            search_keyword_length = search_keyword.length;
+        //hide the message for the footer
+        $scope.submit_input = false;
+        //TODO the search would be triggered only if there are more than two characters or no characters
+        $scope.search_keyword_length = search_keyword_length;
+        $scope.questions = [];
+        $scope.offset_question = 0;
+        $scope.succesful_submission_message = false;
+        $scope.search_questions();
+
+
+    };
+
+
+    $scope.create_filter_object = function() {
+        //TODO need to apply switch case when dynamic filters would be there, where each case would have it's own set of
+        //null check for their respective filters
+        var filter_selection = {};
+
+        if ($scope.selectedCategory == $scope.question_categories[0]) {
+            filter_selection["display_category"] = "Public";
+        } else if ($scope.selectedCategory == $scope.question_categories[1]) {
+            filter_selection["display_category"] = "Personal";
+        }
+
+        if ($localStorage.recentSelectedSubjectID !=  undefined) {
+            filter_selection["sub_id"] = $localStorage.recentSelectedSubjectID;
+        }
+        //if search is either not initiated or search query is removed after initiation
+        if ($scope.question_search != undefined && $scope.question_search != '') {
+            filter_selection['search_query'] = $scope.question_search;
+        }
+        var purpose = $scope.purposeList;
+        var goal_list = [];
+        if ((purpose.includes("Course study") || purpose.includes( "Interview preparation"))
+            && ($scope.selectedCategory != $scope.question_categories[1]) ) {
+
+            for (var goal in purpose) {
+                if (purpose[goal] == "Course study") {
+                    goal_list.push(1)
+                }
+                if (purpose[goal] == "Interview preparation"){
+                    goal_list.push(0)
+                }
+            }
+            filter_selection["purpose"] = goal_list;
+        } else if ($scope.selectedCategory == $scope.question_categories[1]) {
+            for (var index_purpose in purpose) {
+                var purpose_val = purpose[index_purpose];
+                switch (purpose_val) {
+                    case "Learnt from interest":
+                        goal_list.push("interest");
+                        break;
+                    case "Course study":
+                        goal_list.push("course");
+                        break;
+                    case "Interview preparation":
+                        goal_list.push("interview");
+                        break;
+                    case "Office requirement":
+                        goal_list.push("office");
+                        break;
+                    case "Doubt clearance":
+                        goal_list.push("doubt");
+                        break;
+                    case "Need to learn":
+                        goal_list.push("learn");
+                        break;
+                    case "Interesting read":
+                        goal_list.push("interesting_read");
+                        break;
+                    case "TO-DO":
+                        goal_list.push("todo");
+                        break;
+                    case "High priority":
+                        goal_list.push("priority");
+                        break;
+
+                }
+            }
+        }
+
+        // console.log($localStorage.loggedIn);
+        if ($localStorage.loggedIn) {
+            filter_selection["authentication"] = $localStorage.user_auth;
+        }
+
+
+        filter_selection['offset'] = $scope.offset_question;
+        // console.log($scope.offset_question);
+        // filter_selection['action'] = "retrieve";
+        // filter_selection['uid'] = 2;
+        $scope.filter_selection = filter_selection;
+    };
+
+
+    $scope.search_questions = function () {
+        // engineering department, aspiring company, college name (separate input)
+        // interview rounds, information domains combine all the inputs into an array
+        //the search operation won't be triggered if the user is not signed in and it's in my questions tab, cz if the
+        //user is not signed in and they perform actions in any one of the input boxes it will
+        // request for search operation
+
+        // console.log($scope.selectedCategory);
+        //the request to backend should only be triggered when the user is either on Public tab or logged in
+        if ($scope.selectedCategory == $scope.question_categories[0] || $localStorage.loggedIn) {
+
+            //the backend request for search will only be made after it has received the response,
+            //TODO: the condition should be improved like if the search query has changed along with the above
+            // condition, otherwise if the response takes some time, changing the subject name will not fetch the
+            // actual results
+            if ($scope.search_request_on) {
+                $scope.create_filter_object();
+
+                $scope.search_request_on = 0;
+                $http({
+                    method: "POST",
+                    url: "./controllers/notes/get_questions.php",
+                    data: $scope.filter_selection
+
+                })
+                    .then(function (response) {
+                        // console.log('question', response.data.records);
+                        //$scope.show_answers = response.data.records;
+                        if (!response.data.records) {
+                            $scope.stop_fetching_questions = 1;
+                        } else {
+                            $scope.questions = $scope.questions.concat(response.data.records);
+                            // $scope.total_question_count = $scope.answered_question_count + $scope.unanswered_question_count;
+                            $scope.stop_fetching_questions = 0;
+                        }
+
+                        $scope.search_request_on = 1;
+
+
+
+                    });
+            }
+        }
+    };
+
+    $scope.search_questions();
+
+
+
+    $scope.Answers = {};
+    $scope.submit_qa = function (question_id, question_index, flag_has_answer) {
+        // console.log('submit_answer')
+        //console.log($scope.Answers[qId]);
+        // console.log($scope.questions[question_index].privacy);
+        //if flag has answer is true it should perform an update operation and not insertion operation
+        var qid = question_id || 0,
+            question_answer = {},
+            question = '',
+            answer = '',
+            submisstion_flag = true; //this variable would be turned to false if the submission cannot be made
+
+
+        if ($localStorage.loggedIn) {
+            $scope.create_filter_object();
+            question_answer["filter_value"] = $scope.filter_selection;
+
+            if ("sub_id" in $scope.filter_selection) {
+                question_answer["sub_name"] = $localStorage.recentSelectedSubject;
+            }
+
+
+            if (qid == 0) {
+                //new question submitted
+                question = $scope.question_search;
+                if (question.length > 10) {
+                    question_answer["question"] = question;
+                    question_answer["question_type"] = "new";
+                    // console.log($scope.question_privacy);
+                    if ($scope.private_question) {
+                        question_answer["question_privacy"] = "private";
+                    } else {
+                        question_answer["question_privacy"] = "public";
+                    }
+
+                    if ($scope.ref_qid != 0) {
+                        question_answer["ref_qid"] = $scope.ref_qid;
+                    }
+                    answer = $scope.answer_value;
+                    if (answer.length > 10) {
+                        question_answer["answer"] = answer;
+                        if ($scope.private_answer) {
+                            question_answer["answer_privacy"] = "private";
+                        } else {
+                            question_answer["answer_privacy"] = "public";
+                        }
+                    } else {
+                        submisstion_flag = false;
+                        $scope.succesful_submission_message = true;
+                        $scope.message_submit = "Answer should be minimum of 10 characters.";
+                    }
+                } else {
+                    submisstion_flag = false;
+                    $scope.succesful_submission_message = true;
+                    $scope.message_submit = "Notes title should be minimum of 10 characters.";
+                }
+
+            } else {
+                question_answer["qid"] = qid;
+                question_answer["question_type"] = "existing";
+                answer  = $scope.questions[question_index].short_answer;
+                if (answer.length > 10) {
+                    question_answer["answer"] = answer;
+
+                    if ($scope.questions[question_index].flag_has_answer) {
+                        question_answer["query_type_answer"] = "update";
+                    }
+
+                    // question_answer["answer_privacy"] = "private";
+                    if ($scope.questions[question_index].privacy) {
+                        question_answer["answer_privacy"] = "private";
+
+                    } else {
+                        question_answer["answer_privacy"] = "public";
+                    }
+                } else {
+                    submisstion_flag = false;
+                    $scope.succesful_submission_message = true;
+                    $scope.message_submit = "Answer should be minimum of 10 characters.";
+                }
+
+            }
+            // console.log(question_answer);
+
+
+        } else {
+            submisstion_flag = false;
+        }
+        if (submisstion_flag) {
+
+            if (question_answer["query_type_answer"] !== undefined) {
+
+                //TODO critical is_short value default needs to be set
+                question_answer["is_short"] = $scope.questions[question_index].is_short;
+                question_answer["long_answer_url"] = $scope.questions[question_index].long_answer_url || '';
+                //here there should be one additional parameter, is_short. if false,
+                // the data would be updated directly for now
+                $http({
+                    method: 'POST',
+                    url: './controllers/notes/update_qa.php',
+                    data: question_answer
+                }).then(function (response) {
+                    // console.log(response);
+
+                    $scope.succesful_submission_message = true;
+                    $scope.message_submit = "Your notes have beeen updated.";
+                    //it will switch to my questions tab, only if the user
+                    if ($scope.selectedCategory != $scope.question_categories[1]) {
+                        $scope.selectedCategory = $scope.question_categories[1];
+                        $scope.trigger_search();
+                        $localStorage.selectedCategory = $scope.selectedCategory;
+                    }
+
+
+                })
+
+
+
+            } else {
+                $http({
+                    method: 'POST',
+                    url: './controllers/notes/submit_qa.php',
+                    data: question_answer
+                }).then(function (response) {
+                    // console.log(response);
+                    $scope.answer_value = '';
+                    $scope.question_search = '';
+                    $scope.succesful_submission_message = true;
+                    $scope.message_submit = "Your notes have beeen submitted.";
+                    //it will switch to my questions tab, as many would like to check questions they have submitted.
+                    $scope.selectedCategory = $scope.question_categories[1];
+                    $scope.trigger_search();
+                    $localStorage.selectedCategory = $scope.selectedCategory;
+
+                })
+            }
+
+
+        }
+
+
+
+
+
+
+        // var answer = $scope.Answers[question_id]
+        // answer_submit_data = {'question_id': question_id, 'answer_value': answer}
+        // $http({
+        //     method: 'POST',
+        //     url: './controllers/post_answer.php',
+        //     data: answer_submit_data
+        // }).then(function (response) {
+        //     $scope.Answers[question_id] = "";
+        // })
+        // // $.post("./controllers/post_answer.php",
+        // //     {
+        // //         question_id: question_id, answer_value: $scope.Answers[question_id]
+        // //     },
+        // //     function (data, status) {
+        // //         console.log("Data: " + data + "\nStatus: " + status);
+        // //     });
+    };
+
+    $scope.my_questions = function () {
+        $http({
+            method: "POST",
+            url: "./controllers/get_my_questions.php"
+
+        })
+            .then(function (response) {
+                // console.log('question', response.data.records);
+
+                $scope.questions = response.data.records;
+
+            });
+
+    }
+
+
+
+
+    $scope.last_visited_question_id = -1;
+    $scope.last_visited_question_text = '';
+
+    $scope.viewSolution = function (questionid, question_index) {
+        $scope.succesful_submission_message = false;
+        //TODO critical is_short default value needs to be checked properly
+        var has_short_answer = $scope.questions[question_index].is_short || true,
+            answer_data = {},
+            flag_has_answer = $scope.questions[question_index].flag_has_answer || false;
+        //TODO critical flag_has_answer value should always be present for both public and personal questions
+        // console.log("view solution");
+        // console.log(has_short_answer);
+
+        if ($localStorage.loggedIn && (has_short_answer != 1) && (flag_has_answer == 1)) {
+            // console.log("view solution backend call");
+            answer_data["personal_tab"] = 1;
+            answer_data["long_answer_url"] = $scope.questions[question_index].long_answer_url;
+            $http({
+                method: 'POST',
+                url: './controllers/notes/get_answers.php',
+                data: answer_data
+            }).then(function (response) {
+                // console.log(response.data.short_answer);
+
+
+                $scope.questions[question_index].short_answer = response.data.short_answer;
+
+            });
+        }
+
+        // var toggler_elements = document.getElementsByClassName("xpln-toggler");
+        // console.log(toggler_elements.length + "length toogler");
+
+        // console.log("qid " + questionid);
+        // if (!$scope.questions[questionid - 1].hasOwnProperty('answers')) {
+        //     $http({
+        //         method: "POST",
+        //         url: "./controllers/show_answers.php",
+        //         data: {questionid: questionid},
+        //         headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        //     })
+        //         .then(function (response) {
+        //
+        //             $scope.questions[questionid - 1].answers = response.data.records;
+        //             $scope.answer_value_temp = "answer display";
+        //             // console.log($scope.questions[questionid - 1].answers);
+        //         });
+        //
+        //
+        // }
+
+
+        // if ($("#" + questionid).find(".ques-xpln-toggle").hasClass('showing')) /// condition to be executed when close button is clicked
+        // {
+        //     $("#" + questionid).find(".ques-xpln-toggle").removeClass('showing');
+        //     $("#" + questionid).find(".xpln-toggler").removeClass("fas fa-angle-double-up").text($scope.last_visited_question_text);
+        //     $("#" + questionid).find(".xpln-body").slideUp();
+        //     $scope.last_visited_question_id = -1;
+        //     $scope.last_visited_question_text = '';
+        // }
+        // else // Open
+        // {
+        //     if ($scope.last_visited_question_id != -1) {
+        //
+        //         $("#" + $scope.last_visited_question_id).find(".ques-xpln-toggle").removeClass('showing')
+        //
+        //         $("#" + $scope.last_visited_question_id).find(".ques-xpln-toggle").removeClass("fas fa-angle-double-up").text($scope.last_visited_question_text);
+        //         $("#" + $scope.last_visited_question_id).find(".xpln-body").slideUp();
+        //     }
+        //     $scope.last_visited_question_id = questionid;
+        //     var toggler_text = flag_answered == '1' ? 'Answer this question' : 'Answer this question';
+        //     $scope.last_visited_question_text = toggler_text;
+        //     // console.log($scope.last_visited_question_id);
+        //
+        //
+        //     //    First hide all other explanation section
+        //
+        //     //---------------------------------------------
+        //
+        //     // show this explanation section --------------
+        //     $("#" + questionid).find(".ques-xpln-toggle").addClass('showing');
+        //     $("#" + questionid).find(".xpln-toggler").addClass("fas fa-angle-double-up").text("");
+        //     $("#" + questionid).find(".xpln-body").slideDown();
+        // }
+
+
+    }
+
+
+
+    $scope.question_category_display = true;
+    // $scope.question_category_dropdown_selected = "Questions category";
+
+
+
+
+    $scope.display_questions_on_category = function (category_name) {
+        $scope.selectedCategory = category_name;
+        $localStorage.selectedCategory = $scope.selectedCategory;
+        // console.log(category_name + "inside function");
+        // var minimum_no_of_questions_in_viewport = 10;
+        if (category_name == $scope.question_categories[1]) {
+            $scope.question_search = '';
+            $scope.purposeList = [];
+            $scope.questions = [];
+            //my answer
+            // var user_name = $scope.validate_user_login();
+            //TODO remove
+            // $localStorage.loggedIn = 0;
+            // $localStorage.user_auth["uid"] = 2;
+
+
+            if ($localStorage.loggedIn){
+                //call trigger_search() function
+                $scope.trigger_search();
+                //in the create filter object there should be on condition check for selectedcategory
+                $scope.personal_notes_message_not_logged_in = false;
+            } else {
+
+                $scope.personal_notes_message_not_logged_in = true;
+
+            }
+
+
+
+            //
+            // if (user_name) {
+            //     $scope.my_questions(user_name);
+            // }
+            $scope.selectedCategory = $scope.question_categories[1];
+
+        }
+
+        else if (category_name == $scope.question_categories[0]) {
+            //public questions
+            $scope.selectedCategory = $scope.question_categories[0];
+            $scope.trigger_search();
+
+        }
+
+
+
+    };
+
+    $scope.display_more_questions_on_scroll = function () {
+        // console.log("display more questions on scroll");
+        if ($scope.stop_fetching_questions == 0) {
+            // console.log($scope.stop_fetching_questions);
+            // console.log($scope.offset_question);
+            $scope.offset_question = $scope.offset_question + 10;
+
+
+            // console.log("scroll");
+            $scope.search_questions();
+            // if ($scope.search_keyword_length >= 1) {
+            //     $scope.search_questions();
+            // } else {
+            //     $scope.show_all_questions();
+            // }
+
+        }
+
+    };
+
+
+
+    //tinymce
+    $scope.answer_value = '';
+
+
+
+
+
+
+    //
+    // $scope.getContent = function() {
+    //     // console.log('Editor content:', $scope.tinymceModel);
+    // };
+    //
+    // $scope.setContent = function() {
+    //     $scope.tinymceModel = 'Time: ' + (new Date());
+    // };
+    //it will have the like button, report button in the toolbar along with the name if possible
+    $scope.answerReadOnlyOptions = {
+        selector: 'textarea',
+        plugins: 'link media codesample image table placeholder autoresize',
+        toolbar: false,
+        menubar:    false,
+        statusbar: false,
+        height: "350"
+    };
+
+    $scope.tinymceOptions = {
+        selector: 'textarea',
+        plugins: 'link media codesample image table placeholder autoresize ExportToDoc',
+        toolbar: 'undo redo | bold italic | codesample | link | table | media | imageupload | ExportToDoc',
+        menubar:    false,
+        statusbar: false,
+        height: "350",
+        setup: function(editor) {
+            //Focus the editor on load
+            // $timeout(function(){ editor.focus(); });
+            // editor.on("init", function() {
+            //
+            // });
+            // editor.on("click", function() {
+            //
+            // });
+            var inp = $('<input class="tinymce-uploader" type="file" name="pic" accept="image/*" style="display:none">');
+            $(editor.getElement()).parent().append(inp);
+            //TODO can add the scope to upload multiple images using for loop
+            inp.on("change",function(){
+                var input = inp.get(0);
+                var file = input.files[0];
+                var fr = new FileReader();
+                fr.onload = function() {
+                    var img = new Image();
+                    img.src = fr.result;
+                    editor.insertContent('<img src="'+img.src+'" width="500px;"/>');
+                    inp.val('');
+                }
+                fr.readAsDataURL(file);
+            });
+
+            editor.addButton( 'imageupload', {
+                text:"Upload image",
+                icon: false,
+                onclick: function(e) {
+                    inp.trigger('click');
+                }
+            });
+
+
+        }
+
+
+    };
+    //used for allowing the popup to close after clicking on outside the modal
+    (function($) {
+        'use strict';
+
+        $(document).ready(function() {
+            $(document).on( 'click', '#mce-modal-block', function() {
+                tinyMCE.activeEditor.windowManager.close();
+            });
+        });
+
+    })(jQuery);
+
+    $scope.submit_info = function () {
+        // console.log("Submit");
+        var personal_data = {};
+        personal_data["answer"] = $scope.answer_value;
+        $http({
+            'method': 'POST',
+            'url' : './answer_submit.php',
+            'data': personal_data
+        }).then(function (response) {
+            // console.log("hello");
+        })
+    };
+
+    //bookmark
+    $scope.bookmark_question = function (question_id) {
+        // console.log(question_id);
+
+
+        if ($localStorage.loggedIn) {
+            $scope.feedback_email = $localStorage.user_auth["mail"] || '';
+            // $scope.feedback_message = $scope.feedback_message + "Question is added to your bucket and tagged to subject "
+            //     + $scope.selectedSubject + "and Purpose" + "Need to learn."
+            $scope.feedback_message = $scope.feedback_message + "The Bookmark functionality would be made available on " +
+                "and before 20th May, 2019."
+        } else {
+            $scope.feedback_message = $scope.feedback_message + "You are not logged in to Bookmark questions. <br>" +
+            "The <b>Bookmark functionality</b> helps you to <b>store the questions in your bucket</b> and by default " +
+                "gets added to 'Need to learn'  purpose."
+        }
+
+
+    };
+
+
+
+
+
+    //typeahead
+
+
+
+
+    $('.subject-name').on('focus', function() {
+        $(this).parent().siblings().addClass('active');
+        //call the function to retrieve user specific subjects
+
+        // console.log("active");
+    }).on('blur', function() {
+        if (!$(this).val()) {
+            $(this).parent().siblings().removeClass('active');
+        }
+    });
+
+    function add_subject(){
+        // need to receive as input the subject typed in, it won't be there in any model as we are not using angularjs for subjects textbox
+        // console.log("hello add subject");
+        // // console.log($('.subject-name').typeahead('val'));
+        // console.log("Button click" +$scope.selectedNumber);
+    };
+
+
+    $('.subject-name').bind('typeahead:select', function(ev, suggestion) {
+        $scope.selectedSubjectID = suggestion.subject_id;
+        $scope.selectedSubject = suggestion.subject;
+        // use the most recent subject to auto populate it in the subject text box as user would mostly prepare one subject at a time
+        $localStorage.recentSelectedSubject = $scope.selectedSubject;
+        $localStorage.recentSelectedSubjectID = $scope.selectedSubjectID;
+
+        $scope.trigger_search();
+
+
+
+
+        // console.log($scope.selectedSubjectID);
+
+    });
+
+    $('.subject-name').bind('typeahead:autocomplete', function (ev, suggestion) {
+        $scope.selectedSubjectID = suggestion.subject_id;
+        $scope.selectedSubject = suggestion.subject;
+        $('.subject-name').typeahead('close');
+        $localStorage.recentSelectedSubject = $scope.selectedSubject;
+        $localStorage.recentSelectedSubjectID = $scope.selectedSubjectID;
+        $scope.trigger_search();
+
+
+
+
+
+        // console.log($scope.selectedSubject);
+        // add_subject();
+    });
+
+    $scope.selectedSubject = null;
+
+    $(".subject_add").click(function () {
+        // console.log("hello");
+
+        //submit textarea data
+        // $http({
+        //
+        //     'method' : 'POST',
+        //     'url':
+        //
+        //
+        // })
+
+    });
+
+
+
+
+    var subject_names = [
+        // { subject: 'Programming And Data Structures', subject_id: '5' },
+        // { subject: 'DBMS (Database)' , subject_id: '6'},
+        // { subject: 'Java (OOPS)' , subject_id: '7'}
+
+    ];
+
+
+//Documentation : https://github.com/corejavascript/typeahead.js/blob/master/doc/jquery_typeahead.md
+    $('#subject_id .typeahead').typeahead({
+        highlight: true,
+        hint: true,
+        minLength: 0
+    }, {
+        name: 'subjects',
+        display: function(item) {
+            return item.subject_id, item.subject;
+        },
+        source: nflTeamsWithDefaults,
+        limit: 10,
+        templates: {
+            empty: [
+                '<span>',
+                '<button type="button" class="btn btn-primary btn-block" id="subject_add">Add subject</button>',
+                // 'Add subject ...',
+                '</span>',
+                '<script>',
+                'document.getElementById("subject_add").addEventListener("click", function(){\n' +
+                'console.log("addition initiated");\n' + add_subject()+
+                '});',
+                '</script>'
+            ].join('\n'),
+            suggestion: function(data) {
+                return [
+
+                    '<span>' + data.subject + '</span>',
+
+                ].join('\n');
+            },
+            footer: ['<span>',
+                '<button type="button" class="btn btn-primary btn-block" id="subject_add">Add subject</button>',
+                // 'Add subject ...',
+                '</span>',
+                '<script>',
+                'document.getElementById("subject_add").addEventListener("click", function(){\n' +
+                'console.log("addition initiated");\n' + add_subject()+
+                '});',
+                '</script>'
+            ].join('\n'),
+        }
+    }).on("input", function(e) {
+        //the search query on users input, this may not be the subject name, this will be required when the user wants
+        // to add custom subject name
+        $scope.selectedSubject = e.target.value;
+        // console.log($scope.selectedSubject);
+
+    }).val($localStorage.recentSelectedSubject);
+
+    function nflTeamsWithDefaults(query, sync, async) {
+
+        if (query === '') {
+            // console.log("empty subject");
+            if ($scope.subject_on_load == 1) {
+                $localStorage.recentSelectedSubjectID = undefined;
+                $localStorage.recentSelectedSubject = null;
+                $scope.recentSelectedSubject = null;
+                $scope.recentSelectedSubjectID = null;
+                $scope.trigger_search();
+
+            }
+            $scope.subject_on_load = 1;
+
+
+
+
+            sync(subject_names);
+
+        }
+        else {
+            var req = {
+                url: './controllers/notes/search_subjects.php?query='+query,
+                method: 'GET',
+            };
+            return $http(req).then(function successCallback(response) {
+
+                async(response.data.records);
+            },function errorCallback(response) {
+
+            });
+
+
+        }
+
+    }
+
+});
